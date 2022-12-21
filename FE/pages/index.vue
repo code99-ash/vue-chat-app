@@ -11,30 +11,31 @@
 
       <section>
         <div class="space-y-1 px-2">
-            <div 
+            <nuxt-link 
               class="flex space-x-2 py-2 border-neutral-50" 
               v-for="(user, idx) in $store.state.users.data" 
               :class="[idx==0? '':'border-t']"
               :key="user._id"
+              :to="`/?user=${user.username}`"
             >
               <div class="flex-none w-[40px] h-[40px] rounded-full bg-sky-50"></div>
               <div class="grow space-y-1">
                 <h4 class="text-neutral-500 text-sm font-medium">{{user.username}}</h4>
                 <p class="text-xs text-slate-400">{{user.email}}</p>
               </div>
-            </div>
+            </nuxt-link>
         </div>
       </section>
     </nav>
 
     <!-- MAIN COMPONENTS -->
     <main class="grow flex flex-col h-[100vh] space-y-2 relative">
-      <template v-if="$auth.loggedIn">
+      <template v-if="$auth.loggedIn && $route.query.user">
         <header class="flex items-center space-x-3 border-b border-[#fff] p-[15px] h-max">
           <button class="btn bg-neutral-100 w-[30px] h-[30px] rounded-full centerXY">
             <i class="pi pi-user text-sm font-medium text-slate-300"></i>
           </button>
-          <h1 class="text-base md:text-lg font-medium text-slate-400">John Doe</h1>
+          <h1 class="text-base md:text-lg font-medium text-slate-400">{{user}}</h1>
         </header>
         <!-- Chats Card -->
         <section class="grow overflow-x-hidden overflow-y-scroll ">
@@ -58,34 +59,52 @@
           </button>
         </section>
       </template>
+      <Cover v-else-if="$auth.loggedIn && !$route.query.user" />
       
       <section v-else class="min-w-[400px] mx-auto pt-[100px]">
-        <Login />
+        <Login v-if="authType == 'login'" @setAuthType="setAuthType" />
+        <Signup v-else @setAuthType="setAuthType" />
       </section>
     </main>
 
     <!-- RIGHT NAV -->
-    <nav class="flex-none w-[220px] bg-white h-full">
+    <!-- <nav class="flex-none w-[220px] bg-white h-full">
       <header class="flex items-center space-x-3 border-b border-neutral-50 p-[15px]">
         <i class="pi pi-info-circle font-bold text-slate-300"></i>
         <h1 class="text-base md:text-lg font-medium text-slate-400">Info</h1>
       </header>
 
-      <!-- User Profile -->
       <div class="flex items-center justify-center flex-col p-[10px]">
-        <!-- Image -->
         <div class="w-[100px] h-[100px] rounded-full bg-neutral-50"></div>
         <h3 class="text-slate-500 text-base md:text-lg font-medium">John Doe</h3>
       </div>
-    </nav>
+    </nav> -->
   </section>
 </template>
 
 <script>
 import Login from '@/components/Auth/Login'
+import Signup from '@/components/Auth/Signup'
+import Cover from '@/components/Cover'
 export default {
   components: {
-    Login
+    Login, Cover, Signup
+  },
+  watch: {
+    '$route': function(newV, oldV) {
+      this.user = newV.query.user
+    }
+  },
+  data() {
+    return {
+      user: this.$route.query.user,
+      authType: 'login'
+    }
+  },
+  methods: {
+    setAuthType(type) {
+      this.authType = type
+    }
   }
 }
 </script>

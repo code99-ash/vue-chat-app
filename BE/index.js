@@ -31,12 +31,21 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`))
 
 mongoose.connect(
-    process.env.DB_CONNECT, 
+    process.env.DB_URL, 
     {useNewUrlParser: true,useUnifiedTopology: true},
-    (err) => {
-        if(err)
-            console.log('Failed to connect to the server, restarting the server will be recommended', err)
-        else
-        console.log('Connected to db')
-    }
+    // (err) => {
+    //     if(err)
+    //         console.log('Failed to connect to the server, restarting the server will be recommended', err)
+    //     else
+    //     console.log('Connected to db')
+    // }
 );
+
+const db = mongoose.connection
+db.once('open', _ => {
+    console.log('Database connected', process.env.DB_URL)
+})
+
+db.once('error', err => {
+    console.error('Connection error:', err)
+})

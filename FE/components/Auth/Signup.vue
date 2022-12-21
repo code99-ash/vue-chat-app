@@ -1,8 +1,8 @@
 <template>
-    <section class="w-full sm:max-w-[400px] h-auto bg-white space-y-2">
+    <section class="w-full sm:max-w-[400px] h-auto space-y-2">
         <h1 class="text-cyan-400 text-2xl md:text-3xl">Signup</h1>
         <div 
-            :class="[feedback.severity=='error'? 'bg-red-200 text-red-500':'text-blue-200 text-blue-400']"
+            :class="[feedback.severity=='error'? 'bg-red-200 text-red-500':'bg-blue-200 text-blue-400']"
             class="rounded px-[20px] py-[8px] text-xs mb-2 font-medium" 
             v-if="feedback.severity"
         >
@@ -97,7 +97,8 @@ export default {
             try {
                 this.feedback.severity = undefined
 
-                await this.$axios.$post('/auth/register', {email, username, password})
+                await this.$axios.$post('/auth/signup', {email, username, password})
+                this.feedback = {severity: 'success', msg: 'Registration successful'}
             }catch(err) {
                 console.log(err)
                 this.feedback = {severity: 'error', msg: this.handleError(err)}
