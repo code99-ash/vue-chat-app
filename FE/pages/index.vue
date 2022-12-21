@@ -20,7 +20,9 @@
             >
               <div class="flex-none w-[40px] h-[40px] rounded-full bg-sky-50"></div>
               <div class="grow space-y-1">
-                <h4 class="text-neutral-500 text-sm font-medium">{{user.username}}</h4>
+                <h4 class="text-neutral-500 text-sm font-medium">
+                  {{$auth.user._id == user._id? 'Me' : user.username}}
+                </h4>
                 <p class="text-xs text-slate-400">{{user.email}}</p>
               </div>
             </nuxt-link>
