@@ -25,6 +25,7 @@ app.get('/api', async(req, res) => {
     }
 })
 app.use('/api/auth', require('./routes/auth'))
+app.use('/api/chats', require('./routes/chats'))
 
 
 const PORT = process.env.PORT || 4000;

@@ -4,8 +4,8 @@ module.exports = {
     send: async(req, res) => {
         try {
             // const { message, sender, recipient } = req.body;
-            await Chat.create(req.body);
-            res.send('Post was created successfully !!');
+            const chat = await Chat.create(req.body);
+            res.json({chat});
         }catch(err) {
             console.log(err)
             res.status(500).send('Failed to Send')
@@ -15,7 +15,10 @@ module.exports = {
     fetch: async(req, res, next) => {
         try {
             const {sender, recipient} = req.body
-            const chats = await Chat.find({sender, recipient});
+            const chats = await Chat.find({ $or: [
+                {sender, recipient},
+                {sender: recipient, recipient: sender}
+            ]});
             res.json(chats);
         }catch(err) {
             console.log(err)
