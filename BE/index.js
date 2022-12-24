@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { User } = require('./models')
+const { User, Chat } = require('./models')
 const cors = require('cors')
 
 const app = express();
@@ -26,6 +26,15 @@ app.get('/api', async(req, res) => {
 })
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/chats', require('./routes/chats'))
+
+app.get('/clear', async(req, res) => {
+    try {
+        await Chat.deleteMany();
+        res.send('Cleared')
+    }catch(err) {   
+        console.error(err)
+    }
+})
 
 
 const PORT = process.env.PORT || 4000;
