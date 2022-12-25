@@ -2,9 +2,49 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { User, Chat } = require('./models')
 const cors = require('cors')
+const http = require('http');
+const socketio = require('socket.io')
+const emitter = require('./events/emitter')
+
+require('dotenv').config()
 
 const app = express();
-require('dotenv').config()
+const server = http.createServer(app, {
+    cors: {
+        origin: process.env.CLIENT_URL,
+        
+    }
+})
+const io = socketio(server, {
+    allowEIO3: true,
+    cors: {
+        origin: process.env.CLIENT_URL,
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+})
+
+io.on('connection', socket => {
+    // const token = socket.handshake.headers.cookie.split('; ')[1].split('auth._token.local=Bearer%20')[1];
+
+    socket.emit('message', `A user connected: ${socket.id}`)
+    console.log('A user connected', socket.id)
+
+    // socket.on('broadcastLogin', () => {
+    //     const {_id} = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    //     socket.broadcast.emit('userLoggedIn', _id)
+    // })
+
+    socket.on('Hello', msg => {
+        console.log(msg)
+        socket.emit('message', `Sent::: ${msg}`)
+    })
+    socket.on('sendMessage', (chat) => {
+        console.log(chat)
+        io.emit('newMessage', chat)
+    })
+
+})
 
 var corsOptions = {
     origin: process.env.CLIENT_URL,
@@ -38,7 +78,7 @@ app.get('/clear', async(req, res) => {
 
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`))
+server.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`))
 
 mongoose.connect(
     process.env.DB_URL, 

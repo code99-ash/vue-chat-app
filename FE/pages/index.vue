@@ -15,10 +15,16 @@
     <!-- MAIN COMPONENTS -->
     <main class="grow flex flex-col min-h-[100vh] max-h-[100vh] space-y-2 relative overflow-hidden">
       <template v-if="$auth.loggedIn && $route.query.user">
-        <message-box :loading="loading" :user="user" :added="added" class="message-box"></message-box>
+        <message-box 
+          :loading="loading" 
+          :user="user" 
+          :added="added" 
+          :socket="socket"
+          class="message-box"
+        ></message-box>
   
         <!-- Input Bar -->
-        <text-box @sent="messageSent"></text-box>
+        <text-box @sent="messageSent" :socket="socket"></text-box>
       </template>
       <Cover v-else-if="$auth.loggedIn && !$route.query.user" />
       
@@ -58,6 +64,13 @@ export default {
     if(this.$route.query.user) {
       this.getUserMessages(this.$route.query.id)
     }
+    this.socket = this.$nuxtSocket({
+      name: 'home',
+      channel: '/',
+      reconnection: false,
+    })
+
+    this.socket.on('message', data => console.log("Welcome",data))
   },
 
   data() {

@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const jwt= require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const emitter = require('../events/emitter')
 
 module.exports = {
 
@@ -21,13 +22,6 @@ module.exports = {
             // Hash the Password
             const salt = bcrypt.genSaltSync(10);
             const password = await bcrypt.hashSync(unhashed, salt);
-    
-            // if(pics) {
-            //     // Upload Image to Cloud
-            //     var {err, result} = await uploadImage(pics);
-            //     // Collect public_id and url frmom uploaded file
-            //     var picture = {public_id: result.public_id, url: result.secure_url};
-            // }
     
             await User.create({ username, email, password, avatar, role });
     
@@ -73,10 +67,14 @@ module.exports = {
         try {
             const verified = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
             req.user= verified;
-            console.log(verified)
+            
+            // console.log(verified)
+            emitter.emit('userVerified', verified);
+
             res.header('Authorization', token).json({user: verified}); // for /user
             // next(); //for verify middleware
         }catch(err) {
+            console.log(err)
             res.status(500).send('Invalid token');
         }
     }

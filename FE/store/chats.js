@@ -21,7 +21,8 @@ export const mutations = {
         if(state.data[`chat-${recipient}`]) {
             state.data[`chat-${recipient}`].push(data)
         }else {
-            state.data[`chat-${recipient}`] = data
+            const arr = Array.isArray(data)? data : [data];
+            state.data[`chat-${recipient}`] = arr;
         }
         console.log(state.data[`chat-${recipient}`])
     }

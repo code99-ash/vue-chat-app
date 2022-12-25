@@ -13,6 +13,7 @@
 <script>
 export default {
     name: 'TextBox',
+    props: ['socket'],
     data() {
         return {
             message: ''
@@ -29,8 +30,8 @@ export default {
                 }
 
                 const {chat} = await this.$axios.$post('/chats/send', {...data});
-                console.log(chat)
                 this.message = ''
+                this.socket.emit('sendMessage', chat)
                 this.$store.dispatch('chats/newMessage', {recipient: this.$route.query.id, data: chat})
                 this.$emit('sent')
             }catch(err) {

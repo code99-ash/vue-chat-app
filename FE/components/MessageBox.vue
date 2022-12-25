@@ -35,10 +35,28 @@ export default {
         },
         user: {
             type: Object | undefined
-        }
+        },
     },
     mounted() {
         this.scrollToBottom()
+        this.socket = this.$nuxtSocket({
+          name: 'home',
+          channel: '/',
+          reconnection: false,
+        })
+        this.socket.on('newMessage', (chat) => {
+          if(chat.recipient == this.$auth.user._id) { // a message for us
+              // Check if sender is the current chat
+              if(chat.sender == this.$route.query.id) {
+                // Push to current Message
+                this.messages.push(chat)
+              }
+
+              // save to store;
+              this.$store.dispatch('chats/newMessage', {recipient: chat.sender, data: chat})
+          }
+          console.log(this.$store.state.chats.data)
+        })
     },
     data() {
       return {

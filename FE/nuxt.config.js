@@ -22,6 +22,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     {src: '@/plugins/toast-service', ssr: false},
+    { src: '~/plugins/socket.client.js' },
+    '~/plugins/axios'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -47,7 +49,18 @@ export default {
     '@nuxtjs/pwa',
     'primevue/nuxt',
     'cookie-universal-nuxt',
+    'nuxt-socket-io',
   ],
+
+  io: {
+    sockets: [
+      {
+        name: 'home',
+        url: 'http://localhost:4000'
+      }
+    ]
+  },
+
   primevue: {
     theme: 'md-light-indigo',
     ripple: true,
